@@ -56,6 +56,9 @@
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{6pt}
+
 % ------------- защищённый includegraphics -------------
 \newcommand{\protectedincludegraphics}[2][]{%
   \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
@@ -88,16 +91,21 @@
 \newlength{\tourinfoSecondWidth}
 \setlength{\tourinfoSecondWidth}{\dimexpr\textwidth-\tourinfoFirstWidth-2\tabcolsep\relax}
 
-\newenvironment{tourinfotable}{%
-  \begin{table}[H]\centering\small
-  \begin{tabular}{@{} p{\tourinfoFirstWidth} p{\tourinfoSecondWidth} @{}}
-  \toprule
-}{%
-  \bottomrule
-  \end{tabular}
-  \end{table}
+\newenvironment{tourinfotable}
+{
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{\tourinfoFirstWidth}|p{\tourinfoSecondWidth}|}
+\hline
 }
-\newcommand{\tourinfo}[2]{#1 & \parbox[t]{\tourinfoSecondWidth}{\raggedright #2} \\}
+{
+\hline
+\end{tabular}
+\end{table}
+}
+
+\newcommand{\tourinfo}[2]{#1 & #2 \\ \hline}
 
 % ---------------- Маршрут ----------------
 
@@ -118,37 +126,28 @@
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{
-p{3.2cm}
-p{1.2cm}
-p{5.2cm}
-p{5.2cm}
-}
-\toprule
+\begin{tabular}{|p{3.2cm}|p{1.2cm}|p{5.2cm}|p{5.2cm}|}
+\hline
 \textbf{Препятствие} &
 \textbf{К.т.} &
 \textbf{Время прохождения, перепад высот} &
 \textbf{Характер склонов} \\
-\midrule
+\hline
 }
 {
-\bottomrule
 \end{tabular}
 \end{table}
 }
 
-\newcommand{\obstaclerow}[4]{
-#1 & #2 & #3 & #4 \\
-}
+\newcommand{\obstaclerow}[4]{#1 & #2 & #3 & #4 \\ \hline}
 
 % ---------------- Состав группы ----------------
-
 \makeatletter
 
 \newcommand{\@participantslist}{}
 
 \newcommand{\addparticipant}[4]{%
-\g@addto@macro\@participantslist{#1 & #2 & #3 & #4 \\}
+\g@addto@macro\@participantslist{#1 & #2 & #3 & #4 \\ \hline}
 }
 
 \newenvironment{participantstable}
@@ -156,21 +155,15 @@ p{5.2cm}
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{
-p{1cm}
-p{6cm}
-p{3.5cm}
-p{4.5cm}
-}
-\toprule
+\begin{tabular}{|p{1cm}|p{6cm}|p{3.5cm}|p{4.5cm}|}
+\hline
 \textbf{№} &
 \textbf{ФИО} &
 \textbf{Город} &
 \textbf{Роль} \\
-\midrule
+\hline
 }
 {
-\bottomrule
 \end{tabular}
 \end{table}
 }
