@@ -23,8 +23,6 @@
 \RequirePackage{caption}
 \RequirePackage{booktabs}
 \RequirePackage{longtable}
-\RequirePackage{array}
-\RequirePackage{tabularx} % используется в obstacles
 \RequirePackage{makecell}
 \RequirePackage{fancyhdr}
 \RequirePackage{hyperref}
@@ -33,6 +31,8 @@
 \RequirePackage{xparse}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
+\RequirePackage{array}
+\RequirePackage{graphicx}
 
 % ----------------- Оформление -----------------
 \titleformat{\chapter}[hang]{\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
@@ -142,12 +142,28 @@
 \newcommand{\obstaclerow}[4]{#1 & #2 & #3 & #4 \\ \hline}
 
 % ---------------- Состав группы ----------------
+% ---------------- Таблица участников ----------------
+
 \makeatletter
 
 \newcommand{\@participantslist}{}
 
-\newcommand{\addparticipant}[4]{%
-\g@addto@macro\@participantslist{#1 & #2 & #3 & #4 \\ \hline}
+% макрос добавления участника
+% 1 фото
+% 2 ФИО
+% 3 место работы
+% 4 год рождения
+% 5 походный опыт
+% 6 должность
+\newcommand{\addparticipant}[6]{%
+\g@addto@macro\@participantslist{
+\includegraphics[width=2.8cm]{#1} &
+#2 &
+#3 &
+#4 &
+#5 &
+#6 \\ \hline
+}
 }
 
 \newenvironment{participantstable}
@@ -155,12 +171,21 @@
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{|p{1cm}|p{6cm}|p{3.5cm}|p{4.5cm}|}
+\begin{tabular}{|
+m{3cm}|
+p{3.5cm}|
+p{2.5cm}|
+p{1.6cm}|
+p{1.6cm}|
+p{2.5cm}|
+}
 \hline
-\textbf{№} &
+\textbf{Фотография} &
 \textbf{ФИО} &
-\textbf{Город} &
-\textbf{Роль} \\
+\textbf{Место работы, должность} &
+\textbf{Год рождения} &
+\textbf{Походный опыт} &
+\textbf{Должность в походе} \\
 \hline
 }
 {
