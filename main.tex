@@ -1,23 +1,40 @@
-\documentclass[12pt,a4paper]{report}
+\documentclass{tourreport}
 
-\input{preamble}
+\usepackage{lipsum}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+\title{Отчёт о походе}
+\author{Руководитель: Иванов И.И.}
+\date{2022}
 
 \begin{document}
 
-\input{titlepage}
+\begin{titlepage}
+\centering
+{\Large Туристический клуб}\\[1.5cm]
+{\Huge\bfseries Отчёт о походе}\\[1cm]
+{\Large Период: 16.07.2022 -- 21.07.2022}\\[2cm]
+{\large Руководитель: Иванов И.И.}\\[1cm]
+{\large Москва, 2022}
+\vfill
+\end{titlepage}
 
 \tableofcontents
 \newpage
 
-\input{sections/abstract}
-\input{sections/route}
-\input{sections/technical_description}
-\input{sections/logistics}
-\input{sections/conclusions}
+\setcounter{page}{5}
 
-% \appendix
-% \input{appendices/appendix_a}
-% \input{appendices/appendix_b}
+\input{sections/1_ref_info}
+\input{sections/2_region}
+\input{sections/3_orginfo}
+\input{sections/4_schedule}
+\input{sections/5_planmap}
+\input{sections/6_heightgraph}
+\input{sections/7_technical}
+
+\appendix
+\input{appendices/appendix_a}
 
 \bibliographystyle{plain}
 \bibliography{bibliography}
