@@ -1,28 +1,22 @@
-% tourreport.cls --- класс для отчётов о походах (v0.4)
+% tourreport.cls --- класс для отчётов о походах (v0.7, route fixed)
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tourreport}[2026/03/10 v0.4 Tour report class]
+\ProvidesClass{tourreport}[2026/03/10 v0.7 Tour report class]
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions\relax
 
 \LoadClass[12pt,a4paper,oneside]{report}
 
-% ----------------- Базовые пакеты -----------------
+% ----------------- Пакеты -----------------
 \RequirePackage[T2A]{fontenc}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[russian]{babel}
 \RequirePackage{cmap}
 
 \RequirePackage{geometry}
-\geometry{
-  a4paper,
-  left=25mm,
-  right=20mm,
-  top=22mm,
-  bottom=25mm
-}
+\geometry{a4paper,left=25mm,right=20mm,top=22mm,bottom=25mm}
 
-\RequirePackage{tgtermes}  % Times-like with good T2A
+\RequirePackage{tgtermes}
 \RequirePackage{microtype}
 \RequirePackage{graphicx}
 \RequirePackage{float}
@@ -30,15 +24,17 @@
 \RequirePackage{booktabs}
 \RequirePackage{longtable}
 \RequirePackage{array}
-\RequirePackage{tabularx}
+\RequirePackage{tabularx} % используется в obstacles
+\RequirePackage{makecell}
 \RequirePackage{fancyhdr}
 \RequirePackage{hyperref}
 \RequirePackage{enumitem}
 \RequirePackage{titlesec}
 \RequirePackage{xparse}
 \RequirePackage{ifthen}
+\RequirePackage{calc}
 
-% ----------------- Заголовки / отступы -----------------
+% ----------------- Оформление -----------------
 \titleformat{\chapter}[hang]{\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
 \titleformat{\section}[hang]{\normalfont\Large\bfseries}{\thesection}{0.5em}{}
 \titleformat{\subsection}[hang]{\normalfont\large\bfseries}{\thesubsection}{0.5em}{}
@@ -47,23 +43,20 @@
 \titlespacing*{\section}{0pt}{10pt}{6pt}
 \titlespacing*{\subsection}{0pt}{8pt}{4pt}
 
-% ----------------- Абзацы -----------------
 \setlength{\parindent}{1.25cm}
 \setlength{\parskip}{0pt}
 
-% ----------------- Колонтитулы -----------------
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\footnotesize\itshape \leftmark}
 \fancyhead[R]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\setlength{\headheight}{15pt} % безопасная высота для fancyhdr
+\setlength{\headheight}{15pt}
 
-% ----------------- TOC / нумерация глубины -----------------
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
-% ----------------- Защищённый includegraphics -----------------
+% ------------- защищённый includegraphics -------------
 \newcommand{\protectedincludegraphics}[2][]{%
   \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
     \fbox{\parbox[b][6cm][c]{0.95\textwidth}{\centering\textbf{Placeholder:} \texttt{#2} not found.}}%
@@ -85,69 +78,112 @@
 }
 
 % =================================================
-% Section 1 helpers (tour info, route, obstacles)
+% Section 1 helpers (stable)
 % =================================================
+\makeatletter
 
-% --- 1.1: tour info two-column table ---
+% tourinfotable (stable, uses parbox for second column)
+\newlength{\tourinfoFirstWidth}
+\setlength{\tourinfoFirstWidth}{6.5cm}
+\newlength{\tourinfoSecondWidth}
+\setlength{\tourinfoSecondWidth}{\dimexpr\textwidth-\tourinfoFirstWidth-2\tabcolsep\relax}
+
 \newenvironment{tourinfotable}{%
   \begin{table}[H]\centering\small
-  \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{6.5cm} X}
+  \begin{tabular}{@{} p{\tourinfoFirstWidth} p{\tourinfoSecondWidth} @{}}
   \toprule
 }{%
-  \bottomrule
-  \end{tabularx}
-  \end{table}
-}
-\newcommand{\tourinfo}[2]{#1 & #2 \\}
-
-% --- 1.2/1.3: route macro ---
-% \route{<label>}{<sequence text>}
-% label optional: if empty, pass {}.
-\NewDocumentCommand{\route}{O{} m}{%
-  \par\medskip
-  \noindent\textbf{#2}\par\smallskip
-  \noindent\begin{tabularx}{\textwidth}{X}
-    #1
-  \end{tabularx}
-  \par\medskip
-}
-
-% Alternative simpler interface: \routeseq{<sequence text>} which prints with label "Нитка маршрута:"
-\NewDocumentCommand{\routeseq}{m}{\route[#1]{Нитка маршрута:}}
-
-% --- 1.4: obstacles table (4 columns) ---
-\newenvironment{obstacletable}{%
-  \begin{table}[H]\centering\small
-  \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.8cm} >{\centering\arraybackslash}p{1.6cm} >{\raggedright\arraybackslash}p{4.7cm} X}
-  \toprule
-  \textbf{Препятствие} & \textbf{К.т.} & \textbf{Время прохождения, перепад высот} & \textbf{Характер склонов} \\
-  \midrule
-}{%
-  \bottomrule
-  \end{tabularx}
-  \end{table}
-}
-\newcommand{\obstaclerow}[4]{#1 & #2 & #3 & #4 \\}
-
-% --- 1.5: participants accumulator (add/print) ---
-\newcommand{\@participantslist}{}%
-\newcommand{\addparticipant}[4]{%
-  \g@addto@macro\@participantslist{#1 & #2 & #3 & #4 \\ \midrule }
-}
-\newcommand{\printparticipants}{%
-  \begin{table}[H]\centering\small
-  \begin{tabular}{p{0.7cm} p{5.5cm} p{3.5cm} p{4cm}}
-  \toprule
-  \textbf{№} & \textbf{ФИО} & \textbf{Город} & \textbf{Роль / примечание} \\
-  \midrule
-  \@participantslist
   \bottomrule
   \end{tabular}
-  \caption{Состав группы}
   \end{table}
 }
+\newcommand{\tourinfo}[2]{#1 & \parbox[t]{\tourinfoSecondWidth}{\raggedright #2} \\}
 
-% --- day entry helper (удобный синтаксис для дневниковых строк) ---
+% ---------------- Маршрут ----------------
+
+\newenvironment{routeblock}
+{
+\begin{quote}
+\itshape
+}
+{
+\end{quote}
+}
+
+% obstacles table (tabularx — контролируем содержимое)
+% ---------------- Таблица препятствий ----------------
+
+\newenvironment{obstacletable}
+{
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{
+p{3.2cm}
+p{1.2cm}
+p{5.2cm}
+p{5.2cm}
+}
+\toprule
+\textbf{Препятствие} &
+\textbf{К.т.} &
+\textbf{Время прохождения, перепад высот} &
+\textbf{Характер склонов} \\
+\midrule
+}
+{
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\newcommand{\obstaclerow}[4]{
+#1 & #2 & #3 & #4 \\
+}
+
+% ---------------- Состав группы ----------------
+
+\makeatletter
+
+\newcommand{\@participantslist}{}
+
+\newcommand{\addparticipant}[4]{%
+\g@addto@macro\@participantslist{#1 & #2 & #3 & #4 \\}
+}
+
+\newenvironment{participantstable}
+{
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{
+p{1cm}
+p{6cm}
+p{3.5cm}
+p{4.5cm}
+}
+\toprule
+\textbf{№} &
+\textbf{ФИО} &
+\textbf{Город} &
+\textbf{Роль} \\
+\midrule
+}
+{
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\newcommand{\printparticipants}{
+\begin{participantstable}
+\@participantslist
+\end{participantstable}
+}
+
+\makeatother
+
+% day entry helper
 \newcommand{\dayentry}[2][]{%
   \subsection*{#2}%
   \phantomsection
@@ -155,16 +191,9 @@
   \ifthenelse{\equal{#1}{}}{}{\label{#1}}%
 }
 
-% =================================================
-% Hyperref defaults (пустые по умолчанию; main.tex может задать)
-% =================================================
-\hypersetup{
-  pdftitle={},
-  pdfauthor={},
-  colorlinks=true,
-  linkcolor=black,
-  citecolor=black,
-  urlcolor=black
-}
+\makeatother
+
+% hyperref defaults
+\hypersetup{pdftitle={},pdfauthor={},colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
 
 \endinput
