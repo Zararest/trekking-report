@@ -200,6 +200,40 @@
 \end{participantstable}
 }
 
+% ------------- Окружение для графика движения (schedulestable) на longtable -------------
+\newenvironment{schedulestable}[2][]{%
+  \begingroup
+  \scriptsize
+  \setlength{\tabcolsep}{4pt}
+  \begin{longtable}[c]{
+    | >{\centering\arraybackslash}p{1.3cm}
+    | >{\centering\arraybackslash}p{0.8cm}
+    | p{4.4cm}
+    | >{\centering\arraybackslash}p{1.5cm}
+    | >{\centering\arraybackslash}p{1.2cm}
+    | >{\centering\arraybackslash}p{1.3cm}
+    | p{3.0cm}
+    | p{2.0cm}
+  |}
+  \caption{#2}%
+  \if\relax\detokenize{#1}\relax\else\label{#1}\fi\\
+  \hline
+  \makecell{Даты} & \makecell{Дни\\пути} & \makecell{Участки\\маршрута} & \makecell{Протя-\\жённость,\\км*} & \makecell{ЧХВ} & \makecell{Перепад\\высот, м} & \makecell{Определяющие\\препятствия} & \makecell{Погода} \\
+  \hline
+  \endfirsthead
+  \hline
+  \makecell{Даты} & \makecell{Дни\\пути} & \makecell{Участки\\маршрута} & \makecell{Протя-\\жённость,\\км*} & \makecell{ЧХВ} & \makecell{Перепад\\высот, м} & \makecell{Определяющие\\препятствия} & \makecell{Погода} \\
+  \hline
+  \endhead
+  \hline \multicolumn{8}{r}{{Продолжение на следующей странице}} \\
+  \endfoot
+  \hline
+  \endlastfoot
+}{%
+  \end{longtable}
+  \endgroup
+}
+
 \makeatother
 
 % day entry helper
