@@ -32,7 +32,6 @@
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{array}
-\RequirePackage{graphicx}
 
 % ----------------- Оформление -----------------
 \titleformat{\chapter}[hang]{\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
@@ -171,13 +170,14 @@
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{|
-m{3cm}|
-p{3.5cm}|
-p{2.5cm}|
-p{1.6cm}|
-p{1.6cm}|
-p{2.5cm}|
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{
+| >{\centering\arraybackslash}m{3cm}   |   % фото
+| >{\centering\arraybackslash}m{4cm}   |   % ФИО
+| >{\centering\arraybackslash}m{2.5cm} |   % место работы
+| >{\centering\arraybackslash}m{1.2cm} |   % год рождения
+| >{\centering\arraybackslash}m{1.8cm} |   % опыт
+| >{\centering\arraybackslash}m{2.5cm} |   % должность
 }
 \hline
 \textbf{Фотография} &
@@ -208,8 +208,6 @@ p{2.5cm}|
   \addcontentsline{toc}{subsection}{#2}%
   \ifthenelse{\equal{#1}{}}{}{\label{#1}}%
 }
-
-\makeatother
 
 % hyperref defaults
 \hypersetup{pdftitle={},pdfauthor={},colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
