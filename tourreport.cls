@@ -32,6 +32,7 @@
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{array}
+\RequirePackage{underscore}
 
 % ----------------- Оформление -----------------
 \titleformat{\chapter}[hang]{\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
