@@ -1,0 +1,39 @@
+name: Build LaTeX report
+
+# Запускать при пушах в любую ветку и при создании pull request
+on:
+  push:
+    branches: [ "*" ]       # все ветки
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest   # GitHub предоставляет виртуальную машину с Ubuntu (amd64)
+
+    steps:
+      # 1. Загружаем содержимое репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Компилируем LaTeX с помощью готового action
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          # Главный файл проекта
+          root_file: main.tex
+          compiler: latexmk
+          # Дополнительные аргументы latexmk (уже включены: -pdf -file-line-error -halt-on-error)
+          # args: ""
+          # Если нужны дополнительные системные пакеты (например, для вставки SVG)
+          # extra_system_packages: "inkscape"
+          # Можно переопределить Docker-образ, если нужно (например, для ARM)
+          # docker_image: zydou/texlive:latest
+
+      # 3. Сохраняем получившийся PDF как артефакт сборки
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tour-report               # имя архива с артефактом
+          path: main.pdf                   # какой файл сохранять
+          if-no-files-found: error         # если файл не создался — ошибка
