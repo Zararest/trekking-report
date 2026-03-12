@@ -1,51 +1,67 @@
-% tourreport.cls --- класс для отчётов о походах (v0.7, route fixed)
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tourreport}[2026/03/10 v0.7 Tour report class]
+% tourreport.cls --- класс для отчётов о горных походах
+% Версия: 1.0 (адаптировано под требования секции)
+% Основан на стандартном классе report.
+% Предоставляет удобные окружения и команды для оформления
+% справочных сведений, таблиц препятствий, состава группы,
+% графика движения и технического описания.
 
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{tourreport}[2026/03/10 v1.0 Tour report class]
+
+% Передача необработанных опций классу report
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions\relax
 
+% Загружаем базовый класс с настройками
 \LoadClass[12pt,a4paper,oneside]{report}
 
-% ----------------- Пакеты -----------------
-\RequirePackage[T2A]{fontenc}
-\RequirePackage[utf8]{inputenc}
-\RequirePackage[russian]{babel}
-\RequirePackage{cmap}
+% --------------------------
+% БЛОК ПОДКЛЮЧЕНИЯ ПАКЕТОВ
+% --------------------------
+\RequirePackage[T2A]{fontenc}        % кодировка шрифтов для кириллицы
+\RequirePackage[utf8]{inputenc}      % кодировка исходного текста
+\RequirePackage[russian]{babel}      % русский язык
+\RequirePackage{cmap}                 % поиск и копирование кириллицы в PDF
 
-\RequirePackage{geometry}
+\RequirePackage{geometry}             % поля страницы
 \geometry{a4paper,left=25mm,right=20mm,top=22mm,bottom=25mm}
 
-\RequirePackage{tgtermes}
-\RequirePackage{microtype}
-\RequirePackage{graphicx}
-\RequirePackage{float}
-\RequirePackage{caption}
-\RequirePackage{booktabs}
-\RequirePackage{longtable}
-\RequirePackage{makecell}
-\RequirePackage{fancyhdr}
-\RequirePackage{hyperref}
-\RequirePackage{enumitem}
-\RequirePackage{titlesec}
-\RequirePackage{xparse}
-\RequirePackage{ifthen}
-\RequirePackage{calc}
-\RequirePackage{array}
-\RequirePackage{underscore}
+\RequirePackage{tgtermes}             % шрифт Times (современная альтернатива)
+\RequirePackage{microtype}            % микротипографика
+\RequirePackage{graphicx}             % вставка изображений
+\RequirePackage{float}                 % опция H для размещения рисунков/таблиц
+\RequirePackage{caption}               % настройка подписей
+\RequirePackage{booktabs}              % красивые линии в таблицах
+\RequirePackage{longtable}              % таблицы на несколько страниц
+\RequirePackage{makecell}               % перенос строк в ячейках
+\RequirePackage{fancyhdr}               % колонтитулы
+\RequirePackage{hyperref}               % гиперссылки
+\RequirePackage{enumitem}                % настройка списков
+\RequirePackage{titlesec}                % оформление заголовков
+\RequirePackage{xparse}                   % расширенное определение команд
+\RequirePackage{ifthen}                   % условные операторы
+\RequirePackage{calc}                      % арифметика длин
+\RequirePackage{array}                     % дополнительные типы колонок
+\RequirePackage{underscore}                % разрешает символ _ вне математики
 
-% ----------------- Оформление -----------------
+% --------------------------
+% НАСТРОЙКИ ОФОРМЛЕНИЯ
+% --------------------------
+% Заголовки глав, разделов, подразделов
 \titleformat{\chapter}[hang]{\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
 \titleformat{\section}[hang]{\normalfont\Large\bfseries}{\thesection}{0.5em}{}
 \titleformat{\subsection}[hang]{\normalfont\large\bfseries}{\thesubsection}{0.5em}{}
 
+% Отступы вокруг заголовков
 \titlespacing*{\chapter}{0pt}{-10pt}{12pt}
 \titlespacing*{\section}{0pt}{10pt}{6pt}
 \titlespacing*{\subsection}{0pt}{8pt}{4pt}
 
+% Абзацный отступ и интервал
 \setlength{\parindent}{1.25cm}
 \setlength{\parskip}{0pt}
 
+% Колонтитулы
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\footnotesize\itshape \leftmark}
@@ -53,19 +69,25 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \setlength{\headheight}{15pt}
 
+% Глубина оглавления и нумерации
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
-\renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{6pt}
+% Настройки таблиц
+\renewcommand{\arraystretch}{1.2}    % увеличенный межстрочный интервал
+\setlength{\tabcolsep}{6pt}           % отступ от границ ячеек
 
-% ------------- защищённый includegraphics -------------
+% --------------------------
+% ЗАЩИЩЁННАЯ ВСТАВКА ИЗОБРАЖЕНИЙ
+% --------------------------
+% Если файл не найден, вместо ошибки выводится рамка с именем файла
 \newcommand{\protectedincludegraphics}[2][]{%
   \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
     \fbox{\parbox[b][6cm][c]{0.95\textwidth}{\centering\textbf{Placeholder:} \texttt{#2} not found.}}%
   }%
 }
 
+% Вставка карты с подписью (плавающий рисунок)
 \newcommand{\insertmap}[2][]{%
   \begin{figure}[H]\centering
     \protectedincludegraphics[width=0.95\textwidth]{#2}
@@ -73,6 +95,7 @@
   \end{figure}
 }
 
+% Вставка высотного графика (аналогично карте, но можно переопределить отдельно)
 \newcommand{\inserthighplot}[2][]{%
   \begin{figure}[H]\centering
     \protectedincludegraphics[width=0.95\textwidth]{#2}
@@ -80,130 +103,124 @@
   \end{figure}
 }
 
-% =================================================
-% Section 1 helpers (stable)
-% =================================================
+% --------------------------
+% ОКРУЖЕНИЯ И КОМАНДЫ ДЛЯ ГЛАВЫ 1 «СПРАВОЧНЫЕ СВЕДЕНИЯ»
+% --------------------------
 \makeatletter
 
-% tourinfotable (stable, uses parbox for second column)
+% Таблица общих сведений (две колонки: параметр и значение)
 \newlength{\tourinfoFirstWidth}
 \setlength{\tourinfoFirstWidth}{6.5cm}
 \newlength{\tourinfoSecondWidth}
 \setlength{\tourinfoSecondWidth}{\dimexpr\textwidth-\tourinfoFirstWidth-2\tabcolsep\relax}
 
 \newenvironment{tourinfotable}
-{
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{|p{\tourinfoFirstWidth}|p{\tourinfoSecondWidth}|}
-\hline
-}
-{
-\hline
-\end{tabular}
-\end{table}
+{%
+  \begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{|p{\tourinfoFirstWidth}|p{\tourinfoSecondWidth}|}
+  \hline
+}{%
+  \hline
+  \end{tabular}
+  \end{table}
 }
 
+% Команда для заполнения строки таблицы: первый аргумент — название, второй — значение
 \newcommand{\tourinfo}[2]{#1 & #2 \\ \hline}
 
-% ---------------- Маршрут ----------------
-
+% Блок для отображения нитки маршрута (курсив, с отступами)
 \newenvironment{routeblock}
-{
-\begin{quote}
-\itshape
-}
-{
-\end{quote}
+{%
+  \begin{quote}
+  \itshape
+}{%
+  \end{quote}
 }
 
-% obstacles table (tabularx — контролируем содержимое)
-% ---------------- Таблица препятствий ----------------
-
+% Таблица определяющих препятствий
 \newenvironment{obstacletable}
-{
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{|p{3.2cm}|p{1.2cm}|p{5.2cm}|p{5.2cm}|}
-\hline
-\textbf{Препятствие} &
-\textbf{К.т.} &
-\textbf{Время прохождения, перепад высот} &
-\textbf{Характер склонов} \\
-\hline
-}
-{
-\end{tabular}
-\end{table}
+{%
+  \begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{|p{3.2cm}|p{1.2cm}|p{5.2cm}|p{5.2cm}|}
+  \hline
+  \textbf{Препятствие} &
+  \textbf{К.т.} &
+  \textbf{Время прохождения, перепад высот} &
+  \textbf{Характер склонов} \\
+  \hline
+}{%
+  \end{tabular}
+  \end{table}
 }
 
+% Команда для добавления строки в таблицу препятствий
 \newcommand{\obstaclerow}[4]{#1 & #2 & #3 & #4 \\ \hline}
 
-% ---------------- Состав группы ----------------
-% ---------------- Таблица участников ----------------
-
-\makeatletter
-
+% --------------------------
+% ТАБЛИЦА СОСТАВА ГРУППЫ
+% --------------------------
+% Внутренний макрос для накопления записей
 \newcommand{\@participantslist}{}
 
-% макрос добавления участника
-% 1 фото
-% 2 ФИО
-% 3 место работы
-% 4 год рождения
-% 5 походный опыт
-% 6 должность
+% Добавление участника: 1-фото, 2-ФИО, 3-работа, 4-год рождения,
+% 5-походный опыт, 6-должность в походе
 \newcommand{\addparticipant}[6]{%
-\g@addto@macro\@participantslist{
-\includegraphics[width=2.8cm]{#1} &
-#2 &
-#3 &
-#4 &
-#5 &
-#6 \\ \hline
-}
+  \g@addto@macro\@participantslist{%
+    \includegraphics[width=2.8cm]{#1} &
+    #2 &
+    #3 &
+    #4 &
+    #5 &
+    #6 \\ \hline
+  }%
 }
 
+% Окружение для таблицы участников (с отцентрированными ячейками)
 \newenvironment{participantstable}
-{
-\begin{table}[H]
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{
-| >{\centering\arraybackslash}m{3cm}   |   % фото
-| >{\centering\arraybackslash}m{4cm}   |   % ФИО
-| >{\centering\arraybackslash}m{2.5cm} |   % место работы
-| >{\centering\arraybackslash}m{1.2cm} |   % год рождения
-| >{\centering\arraybackslash}m{1.8cm} |   % опыт
-| >{\centering\arraybackslash}m{2.5cm} |   % должность
-}
-\hline
-\textbf{Фотография} &
-\textbf{ФИО} &
-\textbf{Место работы, должность} &
-\textbf{Год рождения} &
-\textbf{Походный опыт} &
-\textbf{Должность в походе} \\
-\hline
-}
-{
-\end{tabular}
-\end{table}
-}
-
-\newcommand{\printparticipants}{
-\begin{participantstable}
-\@participantslist
-\end{participantstable}
+{%
+  \begin{table}[H]
+  \centering
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{
+    | >{\centering\arraybackslash}m{3cm}   |   % фото
+    | >{\centering\arraybackslash}m{4cm}   |   % ФИО
+    | >{\centering\arraybackslash}m{2.5cm} |   % место работы
+    | >{\centering\arraybackslash}m{1.2cm} |   % год рождения
+    | >{\centering\arraybackslash}m{1.8cm} |   % опыт
+    | >{\centering\arraybackslash}m{2.5cm} |   % должность
+  }
+  \hline
+  \textbf{Фотография} &
+  \textbf{ФИО} &
+  \textbf{Место работы, должность} &
+  \textbf{Год рождения} &
+  \textbf{Походный опыт} &
+  \textbf{Должность в походе} \\
+  \hline
+}{%
+  \end{tabular}
+  \end{table}
 }
 
-% ------------- Окружение для графика движения (schedulestable) на longtable -------------
+% Вывод накопленного списка участников
+\newcommand{\printparticipants}{%
+  \begin{participantstable}
+    \@participantslist
+  \end{participantstable}
+}
+
+% --------------------------
+% ТАБЛИЦА ГРАФИКА ДВИЖЕНИЯ (ГЛАВА 4)
+% --------------------------
+% Используется longtable для возможности разрыва между страницами
 \newenvironment{schedulestable}[2][]{%
   \begingroup
-  \scriptsize
+  \scriptsize                 % мелкий шрифт, чтобы таблица помещалась
   \setlength{\tabcolsep}{4pt}
   \begin{longtable}[c]{
     | >{\centering\arraybackslash}p{1.3cm}
@@ -215,8 +232,8 @@
     | p{3.0cm}
     | p{2.0cm}
   |}
-  \caption{#2}%
-  \if\relax\detokenize{#1}\relax\else\label{#1}\fi\\
+  \caption{#2}%               подпись таблицы
+  \if\relax\detokenize{#1}\relax\else\label{#1}\fi\\  % метка, если задана
   \hline
   \makecell{Даты} & \makecell{Дни\\пути} & \makecell{Участки\\маршрута} & \makecell{Протя-\\жённость,\\км*} & \makecell{ЧХВ} & \makecell{Перепад\\высот, м} & \makecell{Определяющие\\препятствия} & \makecell{Погода} \\
   \hline
@@ -236,7 +253,11 @@
 
 \makeatother
 
-% day entry helper
+% --------------------------
+% КОМАНДА ДЛЯ ОФОРМЛЕНИЯ ДНЯ В ТЕХНИЧЕСКОМ ОПИСАНИИ
+% --------------------------
+% Создаёт ненумерованный подзаголовок, добавляет его в оглавление
+% и, если указан необязательный аргумент, ставит метку для ссылок.
 \newcommand{\dayentry}[2][]{%
   \subsection*{#2}%
   \phantomsection
@@ -244,7 +265,16 @@
   \ifthenelse{\equal{#1}{}}{}{\label{#1}}%
 }
 
-% hyperref defaults
-\hypersetup{pdftitle={},pdfauthor={},colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
+% --------------------------
+% НАСТРОЙКИ HYPERREF
+% --------------------------
+\hypersetup{%
+  pdftitle={},%
+  pdfauthor={},%
+  colorlinks=true,%
+  linkcolor=black,%
+  citecolor=black,%
+  urlcolor=black%
+}
 
 \endinput
